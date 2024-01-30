@@ -270,19 +270,15 @@ pub fn syscall_renameat2(
                     return Ok(0);
                 }
             } else if flags.contains(RenameFlags::RENAME_NOREPLACE) {
-                // 不覆盖
                 if path_exists(old_path.path()) && !path_exists(new_path.path()) {
                     let _ = rename(old_path.path(), new_path.path());
                     return Ok(0);
                 }
             } else {
-                // 覆盖
                 if path_exists(old_path.path()) {
                     if let Ok(metadata) = metadata(new_path.path()) {
                         if metadata.is_dir() {
-                            // 新文件是目录
                             let new_filepath = new_path.path().to_string() + old_path.path();
-
                             error!("old_path: {}, new_path: {}", old_path.path(), new_filepath);
                             let _ = rename(old_path.path(), &new_filepath);
                             return Ok(0);
